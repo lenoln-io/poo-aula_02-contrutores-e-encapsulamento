@@ -1,0 +1,2049 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>POO Java - Material Interativo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              sage: {
+                50: "#f6f8f6",
+                100: "#e3e8e3",
+                200: "#c7d2c7",
+                300: "#a3b5a3",
+                400: "#7a947a",
+                500: "#5a7a5a",
+                600: "#456145",
+                700: "#374d37",
+                800: "#2d3f2d",
+                900: "#253425",
+              },
+            },
+            fontFamily: {
+              mono: ["JetBrains Mono", "Fira Code", "monospace"],
+            },
+            animation: {
+              "fade-in": "fadeIn 0.6s ease-out",
+              "slide-up": "slideUp 0.5s ease-out",
+              "pulse-soft": "pulseSoft 2s infinite",
+            },
+            keyframes: {
+              fadeIn: {
+                "0%": { opacity: "0", transform: "translateY(20px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              slideUp: {
+                "0%": { opacity: "0", transform: "translateY(40px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              pulseSoft: {
+                "0%, 100%": { opacity: "1" },
+                "50%": { opacity: "0.7" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body
+    class="bg-gradient-to-br from-sage-50 via-white to-sage-100 min-h-screen"
+  >
+    <!-- Header -->
+    <header
+      class="glass border-b border-sage-200 sticky top-0 z-50 position-fixed"
+    >
+      <div class="max-w-7xl mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div
+              class="w-10 h-10 bg-sage-600 rounded-xl flex items-center justify-center"
+            >
+              <span class="text-white font-bold text-lg">J</span>
+            </div>
+            <div>
+              <h1 class="text-xl font-semibold text-sage-800">Java</h1>
+              <p class="text-sm text-sage-600">
+                Programação Orientada à Objetos
+              </p>
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <div class="text-sm text-sage-600">Progresso:</div>
+            <div class="w-32 h-2 bg-sage-200 rounded-full overflow-hidden">
+              <div
+                id="globalProgress"
+                class="h-full bg-sage-600 transition-all duration-500"
+                style="width: 0%"
+              ></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Slide Navigation -->
+    <nav
+      class="fixed bottom-8 left-1/2 transform -translate-x-1/2 glass border border-sage-200 rounded-full px-6 py-3 z-50"
+    >
+      <div class="flex items-center space-x-4">
+        <button
+          onclick="changeSlide(-1)"
+          id="prevBtn"
+          class="w-10 h-10 bg-sage-600 hover:bg-sage-700 text-white rounded-full flex items-center justify-center transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            ></path>
+          </svg>
+        </button>
+
+        <div class="flex space-x-2">
+          <button
+            onclick="goToSlide(0)"
+            class="slide-indicator w-3 h-3 rounded-full bg-sage-600 transition-all duration-300"
+          ></button>
+          <button
+            onclick="goToSlide(1)"
+            class="slide-indicator w-3 h-3 rounded-full bg-sage-300 transition-all duration-300"
+          ></button>
+          <button
+            onclick="goToSlide(2)"
+            class="slide-indicator w-3 h-3 rounded-full bg-sage-300 transition-all duration-300"
+          ></button>
+          <button
+            onclick="goToSlide(3)"
+            class="slide-indicator w-3 h-3 rounded-full bg-sage-300 transition-all duration-300"
+          ></button>
+          <button
+            onclick="goToSlide(4)"
+            class="slide-indicator w-3 h-3 rounded-full bg-sage-300 transition-all duration-300"
+          ></button>
+          <button
+            onclick="goToSlide(5)"
+            class="slide-indicator w-3 h-3 rounded-full bg-sage-300 transition-all duration-300"
+          ></button>
+        </div>
+
+        <button
+          onclick="changeSlide(1)"
+          id="nextBtn"
+          class="w-10 h-10 bg-sage-600 hover:bg-sage-700 text-white rounded-full flex items-center justify-center transition-all duration-300"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 5l7 7-7 7"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Slide Counter -->
+    <div
+      class="fixed top-24 right-8 glass border border-sage-200 rounded-lg px-4 py-2 z-40"
+    >
+      <div class="text-sm text-sage-600">
+        <span id="currentSlideNumber">1</span> / <span id="totalSlides">6</span>
+      </div>
+    </div>
+
+    <!-- Main Content - Slide Container -->
+    <main class="relative w-full overflow-hidden">
+      <div
+        id="slideContainer"
+        class="flex transition-transform duration-500 ease-in-out h-full pb-20"
+        style="width: 600%"
+      >
+        <!-- Slide 1: Introdução -->
+        <div class="slide w-1/6 h-full flex items-center justify-center p-8">
+          <div class="max-w-4xl mx-auto animate-fade-in">
+            <div class="text-center mb-12">
+              <div
+                class="inline-flex items-center px-4 py-2 bg-sage-100 text-sage-700 rounded-full text-sm font-medium mb-6"
+              >
+                <div
+                  class="w-2 h-2 bg-sage-500 rounded-full mr-2 animate-pulse-soft"
+                ></div>
+                Aula 02 - Construtores e Encapsulamento
+              </div>
+              <h1 class="text-4xl font-bold text-sage-800 mb-4">
+                Programação Orientada a Objetos
+              </h1>
+              <p class="text-xl text-sage-600 max-w-2xl mx-auto">
+                Aprenda os conceitos fundamentais de forma interativa e prática
+              </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-12">
+              <div class="glass rounded-2xl p-8 border border-sage-200">
+                <div class="text-3xl mb-4">🎯</div>
+                <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                  Objetivos
+                </h3>
+                <ul class="space-y-3">
+                  <li class="flex items-start space-x-3">
+                    <div
+                      class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                    ></div>
+                    <span class="text-sage-700"
+                      >Compreender construtores e sua importância</span
+                    >
+                  </li>
+                  <li class="flex items-start space-x-3">
+                    <div
+                      class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                    ></div>
+                    <span class="text-sage-700"
+                      >Implementar sobrecarga de construtores</span
+                    >
+                  </li>
+                  <li class="flex items-start space-x-3">
+                    <div
+                      class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                    ></div>
+                    <span class="text-sage-700"
+                      >Aplicar princípios de encapsulamento</span
+                    >
+                  </li>
+                </ul>
+              </div>
+
+              <div class="glass rounded-2xl p-8 border border-sage-200">
+                <div class="text-3xl mb-4">📚</div>
+                <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                  Metodologia
+                </h3>
+                <div class="space-y-4">
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-8 h-8 bg-sage-100 rounded-lg flex items-center justify-center"
+                    >
+                      <span class="text-sage-600 font-semibold text-sm">1</span>
+                    </div>
+                    <span class="text-sage-700">Conceitos teóricos</span>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-8 h-8 bg-sage-100 rounded-lg flex items-center justify-center"
+                    >
+                      <span class="text-sage-600 font-semibold text-sm">2</span>
+                    </div>
+                    <span class="text-sage-700">Exemplos práticos</span>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <div
+                      class="w-8 h-8 bg-sage-100 rounded-lg flex items-center justify-center"
+                    >
+                      <span class="text-sage-600 font-semibold text-sm">3</span>
+                    </div>
+                    <span class="text-sage-700">Exercícios interativos</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button
+                onclick="changeSlide(1)"
+                class="bg-sage-600 hover:bg-sage-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+              >
+                Começar Aprendizado →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 2: Construtores -->
+        <div class="slide w-1/6 h-full flex justify-center p-8">
+          <div class="max-w-6xl mx-auto animate-fade-in">
+            <div class="mb-8">
+              <h2 class="text-3xl font-bold text-sage-800 mb-4">
+                Construtores
+              </h2>
+              <p class="text-lg text-sage-600">
+                Métodos especiais para inicializar objetos
+              </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-12">
+              <div class="space-y-6">
+                <div class="glass rounded-2xl p-6 border border-sage-200">
+                  <h3
+                    class="text-xl font-semibold text-sage-800 mb-4 flex items-center"
+                  >
+                    <span class="text-2xl mr-3">💡</span>
+                    O que são?
+                  </h3>
+                  <p class="text-sage-700 leading-relaxed mb-4">
+                    Construtores são métodos especiais chamados automaticamente
+                    quando um objeto é criado. Eles inicializam os atributos do
+                    objeto com valores apropriados.
+                  </p>
+                  <div class="bg-sage-50 rounded-lg p-4">
+                    <h4 class="font-semibold text-sage-800 mb-2">
+                      Características:
+                    </h4>
+                    <ul class="space-y-2">
+                      <li class="flex items-center space-x-2">
+                        <div class="w-1.5 h-1.5 bg-sage-500 rounded-full"></div>
+                        <span class="text-sage-700">Mesmo nome da classe</span>
+                      </li>
+                      <li class="flex items-center space-x-2">
+                        <div class="w-1.5 h-1.5 bg-sage-500 rounded-full"></div>
+                        <span class="text-sage-700"
+                          >Não possuem tipo de retorno</span
+                        >
+                      </li>
+                      <li class="flex items-center space-x-2">
+                        <div class="w-1.5 h-1.5 bg-sage-500 rounded-full"></div>
+                        <span class="text-sage-700"
+                          >Chamados com
+                          <code class="bg-sage-200 px-2 py-1 rounded text-sm"
+                            >new</code
+                          ></span
+                        >
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-sage-200">
+                  <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                    🎮 Demonstração Interativa
+                  </h3>
+                  <div class="space-y-3">
+                    <button
+                      onclick="demonstrateConstructor('default')"
+                      class="w-full bg-sage-100 hover:bg-sage-200 text-sage-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      Construtor Padrão
+                    </button>
+                    <button
+                      onclick="demonstrateConstructor('parameterized')"
+                      class="w-full bg-sage-100 hover:bg-sage-200 text-sage-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      Construtor Parametrizado
+                    </button>
+                    <button
+                      onclick="demonstrateConstructor('overloaded')"
+                      class="w-full bg-sage-100 hover:bg-sage-200 text-sage-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      Sobrecarga de Construtores
+                    </button>
+                  </div>
+
+                  <div
+                    id="constructorDemo"
+                    class="mt-4 bg-white rounded-lg p-4 border border-sage-200 min-h-24 flex items-center justify-center text-sage-500"
+                  >
+                    Clique nos botões para ver os construtores em ação! 🚀
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-sage-900 rounded-2xl p-6 text-sage-100 code-block text-sm overflow-x-auto"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <span
+                    class="bg-sage-700 px-3 py-1 rounded-full text-xs font-medium"
+                    >Exemplo Prático</span
+                  >
+                  <div class="flex space-x-1">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                  </div>
+                </div>
+                <pre
+                  class="leading-relaxed"
+                ><span class="text-blue-400">public class</span> <span class="text-yellow-400">Pessoa</span> {
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> nome;
+    <span class="text-blue-400">private</span> <span class="text-green-400">int</span> idade;
+    
+    <span class="text-gray-400">// Construtor padrão</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">Pessoa</span>() {
+        nome = <span class="text-red-400">"Não informado"</span>;
+        idade = <span class="text-purple-400">0</span>;
+    }
+    
+    <span class="text-gray-400">// Construtor parametrizado</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">Pessoa</span>(<span class="text-green-400">String</span> nome, <span class="text-green-400">int</span> idade) {
+        <span class="text-blue-400">this</span>.nome = nome;
+        <span class="text-blue-400">this</span>.idade = idade;
+    }
+    
+    <span class="text-gray-400">// Construtor com validação</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">Pessoa</span>(<span class="text-green-400">String</span> nome) {
+        <span class="text-blue-400">this</span>(nome, <span class="text-purple-400">18</span>); <span class="text-gray-400">// Chama outro construtor</span>
+    }
+}</pre>
+              </div>
+            </div>
+
+            <div
+              class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8"
+            >
+              <div class="flex items-start space-x-3">
+                <span class="text-2xl">💡</span>
+                <div>
+                  <h4 class="font-semibold text-amber-800 mb-2">
+                    Dica Importante
+                  </h4>
+                  <p class="text-amber-700">
+                    Use
+                    <code class="bg-amber-200 px-2 py-1 rounded text-sm"
+                      >this()</code
+                    >
+                    para chamar outros construtores da mesma classe, evitando
+                    duplicação de código!
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 3: Encapsulamento -->
+        <div class="slide w-1/6 h-full flex items-center justify-center p-8">
+          <div class="max-w-6xl mx-auto animate-fade-in">
+            <div class="mb-8">
+              <h2 class="text-3xl font-bold text-sage-800 mb-4">
+                Encapsulamento
+              </h2>
+              <p class="text-lg text-sage-600">
+                Protegendo e controlando o acesso aos dados
+              </p>
+            </div>
+
+            <div class="grid lg:grid-cols-3 gap-6 mb-12">
+              <div
+                class="glass rounded-2xl p-6 border border-sage-200 text-center hover:shadow-lg transition-all duration-300"
+              >
+                <div class="text-4xl mb-4">🔒</div>
+                <h3 class="text-lg font-semibold text-sage-800 mb-2">
+                  Proteção
+                </h3>
+                <p class="text-sage-600">
+                  Impede acesso direto aos dados internos
+                </p>
+              </div>
+              <div
+                class="glass rounded-2xl p-6 border border-sage-200 text-center hover:shadow-lg transition-all duration-300"
+              >
+                <div class="text-4xl mb-4">✅</div>
+                <h3 class="text-lg font-semibold text-sage-800 mb-2">
+                  Validação
+                </h3>
+                <p class="text-sage-600">
+                  Controla como os dados são modificados
+                </p>
+              </div>
+              <div
+                class="glass rounded-2xl p-6 border border-sage-200 text-center hover:shadow-lg transition-all duration-300"
+              >
+                <div class="text-4xl mb-4">🔧</div>
+                <h3 class="text-lg font-semibold text-sage-800 mb-2">
+                  Manutenção
+                </h3>
+                <p class="text-sage-600">
+                  Facilita mudanças internas sem afetar o código externo
+                </p>
+              </div>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-12">
+              <div class="space-y-6">
+                <div class="glass rounded-2xl p-6 border border-sage-200">
+                  <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                    Modificadores de Acesso
+                  </h3>
+                  <div class="space-y-4">
+                    <div
+                      class="flex items-center space-x-4 p-3 bg-red-50 rounded-lg border border-red-200"
+                    >
+                      <code
+                        class="bg-red-600 text-white px-3 py-1 rounded font-mono text-sm"
+                        >private</code
+                      >
+                      <span class="text-red-700">Apenas na própria classe</span>
+                    </div>
+                    <div
+                      class="flex items-center space-x-4 p-3 bg-green-50 rounded-lg border border-green-200"
+                    >
+                      <code
+                        class="bg-green-600 text-white px-3 py-1 rounded font-mono text-sm"
+                        >public</code
+                      >
+                      <span class="text-green-700"
+                        >Acesso de qualquer lugar</span
+                      >
+                    </div>
+                    <div
+                      class="flex items-center space-x-4 p-3 bg-yellow-50 rounded-lg border border-yellow-200"
+                    >
+                      <code
+                        class="bg-yellow-600 text-white px-3 py-1 rounded font-mono text-sm"
+                        >protected</code
+                      >
+                      <span class="text-yellow-700">Pacote + herança</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-sage-200">
+                  <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                    🧪 Teste de Validação
+                  </h3>
+                  <div class="space-y-3">
+                    <button
+                      onclick="testValidation('valid')"
+                      class="w-full bg-green-100 hover:bg-green-200 text-green-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      ✅ Testar Dados Válidos
+                    </button>
+                    <button
+                      onclick="testValidation('invalid')"
+                      class="w-full bg-red-100 hover:bg-red-200 text-red-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      ❌ Testar Dados Inválidos
+                    </button>
+                  </div>
+
+                  <div
+                    id="validationResult"
+                    class="mt-4 bg-white rounded-lg p-4 border border-sage-200 min-h-20 flex items-center justify-center text-sage-500"
+                  >
+                    Teste a validação de dados! 🧪
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-sage-900 rounded-2xl p-6 text-sage-100 code-block text-sm overflow-x-auto"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <span
+                    class="bg-sage-700 px-3 py-1 rounded-full text-xs font-medium"
+                    >Getters e Setters</span
+                  >
+                </div>
+                <pre
+                  class="leading-relaxed"
+                ><span class="text-blue-400">public class</span> <span class="text-yellow-400">ContaBancaria</span> {
+    <span class="text-blue-400">private</span> <span class="text-green-400">double</span> saldo;
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> titular;
+    
+    <span class="text-gray-400">// Getter - acesso controlado</span>
+    <span class="text-blue-400">public</span> <span class="text-green-400">double</span> <span class="text-yellow-400">getSaldo</span>() {
+        <span class="text-blue-400">return</span> saldo;
+    }
+    
+    <span class="text-gray-400">// Setter com validação</span>
+    <span class="text-blue-400">public</span> <span class="text-green-400">void</span> <span class="text-yellow-400">setSaldo</span>(<span class="text-green-400">double</span> saldo) {
+        <span class="text-blue-400">if</span> (saldo >= <span class="text-purple-400">0</span>) {
+            <span class="text-blue-400">this</span>.saldo = saldo;
+        } <span class="text-blue-400">else</span> {
+            <span class="text-blue-400">throw new</span> <span class="text-yellow-400">IllegalArgumentException</span>(
+                <span class="text-red-400">"Saldo não pode ser negativo"</span>
+            );
+        }
+    }
+    
+    <span class="text-blue-400">public</span> <span class="text-green-400">void</span> <span class="text-yellow-400">setTitular</span>(<span class="text-green-400">String</span> titular) {
+        <span class="text-blue-400">if</span> (titular != <span class="text-blue-400">null</span> && 
+            !titular.<span class="text-yellow-400">trim</span>().<span class="text-yellow-400">isEmpty</span>()) {
+            <span class="text-blue-400">this</span>.titular = titular.<span class="text-yellow-400">trim</span>();
+        } <span class="text-blue-400">else</span> {
+            <span class="text-blue-400">throw new</span> <span class="text-yellow-400">IllegalArgumentException</span>(
+                <span class="text-red-400">"Titular não pode ser vazio"</span>
+            );
+        }
+    }
+}</pre>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 4: Prática -->
+        <div
+          class="slide w-1/6 h-full flex items-center justify-center p-8 overflow-y-auto"
+        >
+          <div class="max-w-6xl mx-auto animate-fade-in">
+            <div class="mb-8">
+              <h2 class="text-3xl font-bold text-sage-800 mb-4">
+                Atividade Prática
+              </h2>
+              <p class="text-lg text-sage-600">
+                Implemente a classe Produto com construtores e encapsulamento
+              </p>
+            </div>
+
+            <div class="grid lg:grid-cols-2 gap-8 mb-12">
+              <div class="space-y-6">
+                <div class="glass rounded-2xl p-6 border border-sage-200">
+                  <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                    📋 Especificações
+                  </h3>
+                  <div class="space-y-4">
+                    <div>
+                      <h4 class="font-semibold text-sage-700 mb-2">
+                        Atributos (private):
+                      </h4>
+                      <ul class="space-y-1 text-sm">
+                        <li class="flex items-center space-x-2">
+                          <div
+                            class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                          ></div>
+                          <code class="text-sage-700">String nome</code>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                          <div
+                            class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                          ></div>
+                          <code class="text-sage-700">double preco</code>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                          <div
+                            class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                          ></div>
+                          <code class="text-sage-700">int quantidade</code>
+                        </li>
+                        <li class="flex items-center space-x-2">
+                          <div
+                            class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                          ></div>
+                          <code class="text-sage-700">String categoria</code>
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 class="font-semibold text-sage-700 mb-2">
+                        Construtores:
+                      </h4>
+                      <ul class="space-y-1 text-sm text-sage-600">
+                        <li>• Padrão (valores iniciais)</li>
+                        <li>• Básico (nome e preço)</li>
+                        <li>• Completo (todos os atributos)</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="glass rounded-2xl p-6 border border-sage-200">
+                  <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                    🎮 Demonstração
+                  </h3>
+                  <div class="space-y-3">
+                    <button
+                      onclick="createProduct('default')"
+                      class="w-full bg-sage-100 hover:bg-sage-200 text-sage-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      🔧 Produto Padrão
+                    </button>
+                    <button
+                      onclick="createProduct('basic')"
+                      class="w-full bg-sage-100 hover:bg-sage-200 text-sage-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      ⚙️ Produto Básico
+                    </button>
+                    <button
+                      onclick="createProduct('complete')"
+                      class="w-full bg-sage-100 hover:bg-sage-200 text-sage-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                    >
+                      🔄 Produto Completo
+                    </button>
+                  </div>
+
+                  <div
+                    id="productDemo"
+                    class="mt-4 bg-white rounded-lg p-4 border border-sage-200 min-h-32 flex items-center justify-center text-sage-500"
+                  >
+                    Teste os construtores da classe Produto! 🛍️
+                  </div>
+                </div>
+              </div>
+
+              <div
+                class="bg-sage-900 rounded-2xl p-6 text-sage-100 code-block text-sm overflow-x-auto"
+              >
+                <div class="flex items-center justify-between mb-4">
+                  <span
+                    class="bg-sage-700 px-3 py-1 rounded-full text-xs font-medium"
+                    >Classe Produto</span
+                  >
+                </div>
+                <pre
+                  class="leading-relaxed"
+                ><span class="text-blue-400">public class</span> <span class="text-yellow-400">Produto</span> {
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> nome;
+    <span class="text-blue-400">private</span> <span class="text-green-400">double</span> preco;
+    <span class="text-blue-400">private</span> <span class="text-green-400">int</span> quantidade;
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> categoria;
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> codigo;
+    
+    <span class="text-gray-400">// Construtor padrão</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">Produto</span>() {
+        <span class="text-blue-400">this</span>.nome = <span class="text-red-400">"Sem nome"</span>;
+        <span class="text-blue-400">this</span>.preco = <span class="text-purple-400">0.0</span>;
+        <span class="text-blue-400">this</span>.quantidade = <span class="text-purple-400">0</span>;
+        <span class="text-blue-400">this</span>.categoria = <span class="text-red-400">"Geral"</span>;
+        <span class="text-blue-400">this</span>.codigo = <span class="text-yellow-400">gerarCodigo</span>();
+    }
+    
+    <span class="text-gray-400">// Construtor básico</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">Produto</span>(<span class="text-green-400">String</span> nome, <span class="text-green-400">double</span> preco) {
+        <span class="text-yellow-400">setNome</span>(nome);
+        <span class="text-yellow-400">setPreco</span>(preco);
+        <span class="text-blue-400">this</span>.quantidade = <span class="text-purple-400">0</span>;
+        <span class="text-blue-400">this</span>.categoria = <span class="text-red-400">"Geral"</span>;
+        <span class="text-blue-400">this</span>.codigo = <span class="text-yellow-400">gerarCodigo</span>();
+    }
+    
+    <span class="text-gray-400">// Métodos com validação</span>
+    <span class="text-blue-400">public</span> <span class="text-green-400">void</span> <span class="text-yellow-400">setPreco</span>(<span class="text-green-400">double</span> preco) {
+        <span class="text-blue-400">if</span> (preco >= <span class="text-purple-400">0</span>) {
+            <span class="text-blue-400">this</span>.preco = preco;
+        } <span class="text-blue-400">else</span> {
+            <span class="text-blue-400">throw new</span> <span class="text-yellow-400">IllegalArgumentException</span>(
+                <span class="text-red-400">"Preço não pode ser negativo"</span>
+            );
+        }
+    }
+}</pre>
+              </div>
+            </div>
+
+            <div
+              class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8"
+            >
+              <div class="flex items-start space-x-3">
+                <span class="text-2xl">🎯</span>
+                <div>
+                  <h4 class="font-semibold text-emerald-800 mb-2">
+                    Atividade 2: Classe ContaBancaria Completa
+                  </h4>
+                  <p class="text-emerald-700 mb-4">
+                    Agora vamos implementar uma classe mais complexa com
+                    múltiplos construtores e métodos de negócio!
+                  </p>
+                  <button
+                    onclick="showBankAccountActivity()"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300"
+                  >
+                    Ver Atividade Completa →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="bankAccountActivity" class="hidden space-y-8 mb-8">
+              <div class="grid lg:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      📋 Especificações Avançadas
+                    </h3>
+                    <div class="space-y-4">
+                      <div>
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Atributos (private):
+                        </h4>
+                        <ul class="space-y-1 text-sm">
+                          <li class="flex items-center space-x-2">
+                            <div
+                              class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                            ></div>
+                            <code class="text-sage-700">String numero</code>
+                          </li>
+                          <li class="flex items-center space-x-2">
+                            <div
+                              class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                            ></div>
+                            <code class="text-sage-700">String titular</code>
+                          </li>
+                          <li class="flex items-center space-x-2">
+                            <div
+                              class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                            ></div>
+                            <code class="text-sage-700">double saldo</code>
+                          </li>
+                          <li class="flex items-center space-x-2">
+                            <div
+                              class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                            ></div>
+                            <code class="text-sage-700">String tipoConta</code>
+                          </li>
+                          <li class="flex items-center space-x-2">
+                            <div
+                              class="w-1.5 h-1.5 bg-sage-500 rounded-full"
+                            ></div>
+                            <code class="text-sage-700">boolean ativa</code>
+                          </li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          4 Construtores:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>• Padrão (valores iniciais)</li>
+                          <li>• Básico (apenas titular)</li>
+                          <li>• Com saldo inicial</li>
+                          <li>• Completo (todos os parâmetros)</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Métodos de Negócio:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>• depositar(valor)</li>
+                          <li>• sacar(valor)</li>
+                          <li>• ativarConta() / desativarConta()</li>
+                          <li>• exibirExtrato()</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      🏦 Simulador Bancário
+                    </h3>
+                    <div class="space-y-3">
+                      <button
+                        onclick="createBankAccount('default')"
+                        class="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        🏦 Conta Padrão
+                      </button>
+                      <button
+                        onclick="createBankAccount('basic')"
+                        class="w-full bg-green-100 hover:bg-green-200 text-green-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        👤 Conta com Titular
+                      </button>
+                      <button
+                        onclick="createBankAccount('withBalance')"
+                        class="w-full bg-purple-100 hover:bg-purple-200 text-purple-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        💰 Conta com Saldo
+                      </button>
+                      <button
+                        onclick="createBankAccount('complete')"
+                        class="w-full bg-orange-100 hover:bg-orange-200 text-orange-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        ⭐ Conta Completa
+                      </button>
+                    </div>
+
+                    <div
+                      id="bankAccountDemo"
+                      class="mt-4 bg-white rounded-lg p-4 border border-sage-200 min-h-40 flex items-center justify-center text-sage-500"
+                    >
+                      Teste os construtores da ContaBancaria! 🏦
+                    </div>
+
+                    <div id="bankOperations" class="hidden mt-4 space-y-3">
+                      <div class="flex space-x-2">
+                        <input
+                          type="number"
+                          id="operationValue"
+                          placeholder="Valor"
+                          class="flex-1 px-3 py-2 border border-sage-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-500"
+                        />
+                        <button
+                          onclick="performOperation('deposit')"
+                          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                        >
+                          Depositar
+                        </button>
+                        <button
+                          onclick="performOperation('withdraw')"
+                          class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                        >
+                          Sacar
+                        </button>
+                      </div>
+                      <div class="flex space-x-2">
+                        <button
+                          onclick="performOperation('activate')"
+                          class="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                        >
+                          Ativar
+                        </button>
+                        <button
+                          onclick="performOperation('deactivate')"
+                          class="flex-1 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                        >
+                          Desativar
+                        </button>
+                        <button
+                          onclick="performOperation('statement')"
+                          class="flex-1 bg-sage-600 hover:bg-sage-700 text-white px-4 py-2 rounded-lg font-medium transition-all duration-300"
+                        >
+                          Extrato
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  class="bg-sage-900 rounded-2xl p-6 text-sage-100 code-block text-sm overflow-x-auto max-h-96 overflow-y-auto"
+                >
+                  <div class="flex items-center justify-between mb-4">
+                    <span
+                      class="bg-sage-700 px-3 py-1 rounded-full text-xs font-medium"
+                      >ContaBancaria.java</span
+                    >
+                  </div>
+                  <pre
+                    class="leading-relaxed"
+                  ><span class="text-blue-400">public class</span> <span class="text-yellow-400">ContaBancaria</span> {
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> numero;
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> titular;
+    <span class="text-blue-400">private</span> <span class="text-green-400">double</span> saldo;
+    <span class="text-blue-400">private</span> <span class="text-green-400">String</span> tipoConta;
+    <span class="text-blue-400">private</span> <span class="text-green-400">boolean</span> ativa;
+    
+    <span class="text-gray-400">// Construtor padrão</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">ContaBancaria</span>() {
+        <span class="text-blue-400">this</span>.numero = <span class="text-yellow-400">gerarNumeroConta</span>();
+        <span class="text-blue-400">this</span>.titular = <span class="text-red-400">"Titular não informado"</span>;
+        <span class="text-blue-400">this</span>.saldo = <span class="text-purple-400">0.0</span>;
+        <span class="text-blue-400">this</span>.tipoConta = <span class="text-red-400">"Corrente"</span>;
+        <span class="text-blue-400">this</span>.ativa = <span class="text-blue-400">true</span>;
+    }
+    
+    <span class="text-gray-400">// Construtor básico</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">ContaBancaria</span>(<span class="text-green-400">String</span> titular) {
+        <span class="text-blue-400">this</span>.numero = <span class="text-yellow-400">gerarNumeroConta</span>();
+        <span class="text-yellow-400">setTitular</span>(titular);
+        <span class="text-blue-400">this</span>.saldo = <span class="text-purple-400">0.0</span>;
+        <span class="text-blue-400">this</span>.tipoConta = <span class="text-red-400">"Corrente"</span>;
+        <span class="text-blue-400">this</span>.ativa = <span class="text-blue-400">true</span>;
+    }
+    
+    <span class="text-gray-400">// Construtor com saldo inicial</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">ContaBancaria</span>(<span class="text-green-400">String</span> titular, <span class="text-green-400">double</span> saldoInicial) {
+        <span class="text-blue-400">this</span>.numero = <span class="text-yellow-400">gerarNumeroConta</span>();
+        <span class="text-yellow-400">setTitular</span>(titular);
+        <span class="text-yellow-400">setSaldo</span>(saldoInicial);
+        <span class="text-blue-400">this</span>.tipoConta = <span class="text-red-400">"Corrente"</span>;
+        <span class="text-blue-400">this</span>.ativa = <span class="text-blue-400">true</span>;
+    }
+    
+    <span class="text-gray-400">// Construtor completo</span>
+    <span class="text-blue-400">public</span> <span class="text-yellow-400">ContaBancaria</span>(<span class="text-green-400">String</span> titular, <span class="text-green-400">double</span> saldoInicial, <span class="text-green-400">String</span> tipoConta) {
+        <span class="text-blue-400">this</span>.numero = <span class="text-yellow-400">gerarNumeroConta</span>();
+        <span class="text-yellow-400">setTitular</span>(titular);
+        <span class="text-yellow-400">setSaldo</span>(saldoInicial);
+        <span class="text-yellow-400">setTipoConta</span>(tipoConta);
+        <span class="text-blue-400">this</span>.ativa = <span class="text-blue-400">true</span>;
+    }
+    
+    <span class="text-gray-400">// Métodos com validação</span>
+    <span class="text-blue-400">public</span> <span class="text-green-400">void</span> <span class="text-yellow-400">setTitular</span>(<span class="text-green-400">String</span> titular) {
+        <span class="text-blue-400">if</span> (titular != <span class="text-blue-400">null</span> && !titular.<span class="text-yellow-400">trim</span>().<span class="text-yellow-400">isEmpty</span>() && 
+            titular.<span class="text-yellow-400">length</span>() >= <span class="text-purple-400">3</span>) {
+            <span class="text-blue-400">this</span>.titular = titular.<span class="text-yellow-400">trim</span>().<span class="text-yellow-400">toUpperCase</span>();
+        } <span class="text-blue-400">else</span> {
+            <span class="text-blue-400">throw new</span> <span class="text-yellow-400">IllegalArgumentException</span>(
+                <span class="text-red-400">"Titular deve ter pelo menos 3 caracteres!"</span>
+            );
+        }
+    }
+    
+    <span class="text-blue-400">public</span> <span class="text-green-400">boolean</span> <span class="text-yellow-400">depositar</span>(<span class="text-green-400">double</span> valor) {
+        <span class="text-blue-400">if</span> (!ativa) <span class="text-blue-400">return</span> <span class="text-blue-400">false</span>;
+        
+        <span class="text-blue-400">if</span> (valor > <span class="text-purple-400">0</span>) {
+            saldo += valor;
+            <span class="text-blue-400">return</span> <span class="text-blue-400">true</span>;
+        }
+        <span class="text-blue-400">return</span> <span class="text-blue-400">false</span>;
+    }
+    
+    <span class="text-blue-400">public</span> <span class="text-green-400">boolean</span> <span class="text-yellow-400">sacar</span>(<span class="text-green-400">double</span> valor) {
+        <span class="text-blue-400">if</span> (!ativa || valor <= <span class="text-purple-400">0</span> || valor > saldo) {
+            <span class="text-blue-400">return</span> <span class="text-blue-400">false</span>;
+        }
+        saldo -= valor;
+        <span class="text-blue-400">return</span> <span class="text-blue-400">true</span>;
+    }
+}</pre>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 rounded-2xl p-6 mb-8">
+              <div class="flex items-start space-x-3">
+                <span class="text-2xl">📚</span>
+                <div>
+                  <h4 class="font-semibold text-blue-800 mb-2">
+                    Atividade 3: Exercícios Práticos
+                  </h4>
+                  <p class="text-blue-700 mb-4">
+                    Pratique com exercícios mais avançados para consolidar o
+                    aprendizado!
+                  </p>
+                  <button
+                    onclick="showPracticalExercises()"
+                    class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300"
+                  >
+                    Ver Exercícios Práticos →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="practicalExercises" class="hidden space-y-8 mb-8">
+              <div class="grid lg:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      📝 Exercício 1: Classe Aluno
+                    </h3>
+                    <div class="space-y-3">
+                      <div class="bg-sage-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Implementar:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>
+                            • Construtores: padrão, com nome e matrícula,
+                            completo
+                          </li>
+                          <li>
+                            • Validações: nome não vazio, matrícula única, notas
+                            0-10
+                          </li>
+                          <li>
+                            • Métodos: calcular média, verificar situação,
+                            exibir boletim
+                          </li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="demonstrateExercise('aluno')"
+                        class="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        🎓 Demonstrar Classe Aluno
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      👨‍💼 Exercício 2: Classe Funcionario
+                    </h3>
+                    <div class="space-y-3">
+                      <div class="bg-sage-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Implementar:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>
+                            • Atributos: nome, cpf, salario, cargo, dataAdmissao
+                          </li>
+                          <li>• Múltiplos construtores</li>
+                          <li>
+                            • Validações: CPF formato correto, salário positivo
+                          </li>
+                          <li>• Métodos: tempo de empresa, aplicar aumento</li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="demonstrateExercise('funcionario')"
+                        class="w-full bg-green-100 hover:bg-green-200 text-green-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        💼 Demonstrar Classe Funcionario
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      🔧 Exercício 3: Sistema de Validação
+                    </h3>
+                    <div class="space-y-3">
+                      <div class="bg-sage-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Implementar:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>
+                            • Criar objetos usando diferentes construtores
+                          </li>
+                          <li>• Testar todas as validações</li>
+                          <li>• Capturar e tratar exceções adequadamente</li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="demonstrateExercise('validacao')"
+                        class="w-full bg-purple-100 hover:bg-purple-200 text-purple-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        ⚡ Testar Sistema de Validação
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-6">
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      🚗 Exercício 4: Classe Veiculo
+                    </h3>
+                    <div class="space-y-3">
+                      <div class="bg-sage-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Implementar:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>
+                            • Atributos: marca, modelo, ano, cor, preço, km
+                          </li>
+                          <li>• 4 construtores diferentes</li>
+                          <li>• Validações completas</li>
+                          <li>• Métodos: depreciação, revisão necessária</li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="demonstrateExercise('veiculo')"
+                        class="w-full bg-orange-100 hover:bg-orange-200 text-orange-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        🚙 Demonstrar Classe Veiculo
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      📚 Exercício 5: Classe Livro
+                    </h3>
+                    <div class="space-y-3">
+                      <div class="bg-sage-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Implementar:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>
+                            • Atributos: isbn, titulo, autor, editora, ano,
+                            páginas
+                          </li>
+                          <li>• Construtores variados</li>
+                          <li>
+                            • Validações: ISBN único, ano válido, páginas
+                            positivas
+                          </li>
+                          <li>
+                            • Métodos: calcular idade, verificar disponibilidade
+                          </li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="demonstrateExercise('livro')"
+                        class="w-full bg-teal-100 hover:bg-teal-200 text-teal-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        📖 Demonstrar Classe Livro
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      🔗 Exercício 6: Sistema Integrado
+                    </h3>
+                    <div class="space-y-3">
+                      <div class="bg-sage-50 rounded-lg p-4">
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Implementar:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>• Usar ContaBancaria e Funcionario</li>
+                          <li>• Simular sistema de folha de pagamento</li>
+                          <li>• Aplicar todas as validações</li>
+                          <li>• Tratar exceções adequadamente</li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="demonstrateExercise('integrado')"
+                        class="w-full bg-red-100 hover:bg-red-200 text-red-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        🏢 Demonstrar Sistema Integrado
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div
+                id="exerciseDemo"
+                class="glass rounded-2xl p-6 border border-sage-200 min-h-40 flex items-center justify-center text-sage-500"
+              >
+                Clique nos exercícios acima para ver as demonstrações! 🚀
+              </div>
+            </div>
+
+            <div
+              class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-8"
+            >
+              <div class="flex items-start space-x-3">
+                <span class="text-2xl">📖</span>
+                <div>
+                  <h4 class="font-semibold text-amber-800 mb-2">
+                    Material de Apoio
+                  </h4>
+                  <p class="text-amber-700 mb-4">
+                    Conceitos importantes e boas práticas para consulta!
+                  </p>
+                  <button
+                    onclick="showSupportMaterial()"
+                    class="bg-amber-600 hover:bg-amber-700 text-white px-6 py-3 rounded-lg font-medium transition-all duration-300"
+                  >
+                    Ver Material de Apoio →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div id="supportMaterial" class="hidden space-y-8 mb-8">
+              <div class="grid lg:grid-cols-2 gap-8">
+                <div class="space-y-6">
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      🎯 Conceitos Importantes
+                    </h3>
+                    <div class="space-y-4">
+                      <div>
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Construtores:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>
+                            • <strong>Chamada Automática:</strong> Executado
+                            automaticamente na criação
+                          </li>
+                          <li>
+                            • <strong>Sobrecarga:</strong> Múltiplos
+                            construtores com parâmetros diferentes
+                          </li>
+                          <li>
+                            • <strong>Inicialização:</strong> Garantem objeto em
+                            estado válido
+                          </li>
+                          <li>
+                            • <strong>Validação:</strong> Podem validar dados na
+                            criação
+                          </li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h4 class="font-semibold text-sage-700 mb-2">
+                          Encapsulamento:
+                        </h4>
+                        <ul class="space-y-1 text-sm text-sage-600">
+                          <li>
+                            • <strong>Ocultação:</strong> Atributos privados,
+                            métodos públicos
+                          </li>
+                          <li>
+                            • <strong>Validação:</strong> Verificar dados antes
+                            de armazenar
+                          </li>
+                          <li>
+                            • <strong>Consistência:</strong> Manter objeto
+                            sempre válido
+                          </li>
+                          <li>
+                            • <strong>Controle:</strong> Definir como dados são
+                            acessados
+                          </li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="glass rounded-2xl p-6 border border-sage-200">
+                    <h3 class="text-xl font-semibold text-sage-800 mb-4">
+                      ✅ Boas Práticas
+                    </h3>
+                    <ul class="space-y-2 text-sm text-sage-700">
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                        ></div>
+                        <span>Sempre validar dados nos setters</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                        ></div>
+                        <span
+                          >Usar construtores para inicialização
+                          obrigatória</span
+                        >
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                        ></div>
+                        <span
+                          >Implementar múltiplos construtores quando
+                          necessário</span
+                        >
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                        ></div>
+                        <span>Lançar exceções para dados inválidos</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-sage-500 rounded-full mt-2"
+                        ></div>
+                        <span>Documentar validações e restrições</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div
+                  class="bg-sage-900 rounded-2xl p-6 text-sage-100 code-block text-sm overflow-x-auto"
+                >
+                  <div class="flex items-center justify-between mb-4">
+                    <span
+                      class="bg-sage-700 px-3 py-1 rounded-full text-xs font-medium"
+                      >Padrões de Validação</span
+                    >
+                  </div>
+                  <pre
+                    class="leading-relaxed"
+                  ><span class="text-gray-400">// Validação de string não vazia</span>
+<span class="text-blue-400">if</span> (valor != <span class="text-blue-400">null</span> && !valor.<span class="text-yellow-400">trim</span>().<span class="text-yellow-400">isEmpty</span>()) {
+    <span class="text-blue-400">this</span>.atributo = valor.<span class="text-yellow-400">trim</span>();
+} <span class="text-blue-400">else</span> {
+    <span class="text-blue-400">throw new</span> <span class="text-yellow-400">IllegalArgumentException</span>(
+        <span class="text-red-400">"Valor não pode ser vazio"</span>
+    );
+}
+
+<span class="text-gray-400">// Validação de número positivo</span>
+<span class="text-blue-400">if</span> (valor > <span class="text-purple-400">0</span>) {
+    <span class="text-blue-400">this</span>.atributo = valor;
+} <span class="text-blue-400">else</span> {
+    <span class="text-blue-400">throw new</span> <span class="text-yellow-400">IllegalArgumentException</span>(
+        <span class="text-red-400">"Valor deve ser positivo"</span>
+    );
+}
+
+<span class="text-gray-400">// Validação de faixa</span>
+<span class="text-blue-400">if</span> (valor >= minimo && valor <= maximo) {
+    <span class="text-blue-400">this</span>.atributo = valor;
+} <span class="text-blue-400">else</span> {
+    <span class="text-blue-400">throw new</span> <span class="text-yellow-400">IllegalArgumentException</span>(
+        <span class="text-red-400">"Valor fora da faixa permitida"</span>
+    );
+}</pre>
+                </div>
+              </div>
+            </div>
+
+            <div
+              class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8"
+            >
+              <div class="flex items-start space-x-3">
+                <span class="text-2xl">📊</span>
+                <div>
+                  <h4 class="font-semibold text-emerald-800 mb-2">
+                    Avaliação da Semana
+                  </h4>
+                  <div class="space-y-3">
+                    <div>
+                      <h5 class="font-semibold text-emerald-700 mb-1">
+                        Critérios de Participação (1 ponto):
+                      </h5>
+                      <ul class="space-y-1 text-sm text-emerald-600">
+                        <li>• Implementação correta dos construtores</li>
+                        <li>• Aplicação adequada de validações</li>
+                        <li>• Tratamento de exceções</li>
+                        <li>• Qualidade do código produzido</li>
+                      </ul>
+                    </div>
+                    <div>
+                      <h5 class="font-semibold text-emerald-700 mb-1">
+                        Preparação para Próxima Semana:
+                      </h5>
+                      <ul class="space-y-1 text-sm text-emerald-600">
+                        <li>• Métodos</li>
+                        <li>• Métodos estáticos</li>
+                        <li>
+                          • Uso da palavra-chave
+                          <code class="bg-emerald-200 px-1 rounded">this</code>
+                        </li>
+                        <li>
+                          •
+                          <strong
+                            >Revisar conceitos para avaliação parcial - dia
+                            25/08</strong
+                          >
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button
+                onclick="changeSlide(1)"
+                class="bg-sage-600 hover:bg-sage-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+              >
+                Hora do Trabalho →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 5: Trabalhos -->
+        <div
+          class="slide w-1/6 h-full flex items-center justify-center p-8 overflow-y-auto"
+        >
+          <div class="max-w-6xl mx-auto animate-fade-in">
+            <div class="mb-8">
+              <h2 class="text-3xl font-bold text-sage-800 mb-4">
+                3º Bimestre - Trabalhos
+              </h2>
+              <p class="text-lg text-sage-600">
+                Atividades avaliativas para consolidar o aprendizado
+              </p>
+            </div>
+
+            <!-- Trabalho 1 -->
+            <div class="glass rounded-2xl p-8 border border-sage-200 mb-8">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h3 class="text-2xl font-bold text-sage-800 mb-2">
+                    📝 TRABALHO 1: Lista de Exercícios Fundamentais
+                  </h3>
+                  <div class="flex items-center space-x-4 text-sm">
+                    <span
+                      class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold"
+                      >2,0 pontos</span
+                    >
+                    <span
+                      class="bg-red-100 text-red-800 px-3 py-1 rounded-full font-semibold"
+                      >📅 Prazo: 30/08/2024</span
+                    >
+                    <span
+                      class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold"
+                      >📄 Código Java + Relatório</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid lg:grid-cols-2 gap-8 mb-6">
+                <div class="space-y-6">
+                  <div class="bg-sage-50 rounded-xl p-6 border border-sage-200">
+                    <h4
+                      class="text-lg font-semibold text-sage-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">👨‍💼</span>
+                      Exercício 1: Sistema de Funcionários (0,5 pts)
+                    </h4>
+                    <div class="space-y-3">
+                      <div
+                        class="bg-white rounded-lg p-4 border border-sage-200"
+                      >
+                        <h5 class="font-semibold text-sage-700 mb-2">
+                          Especificações:
+                        </h5>
+                        <ul class="text-sm text-sage-600 space-y-1">
+                          <li>
+                            • Classe Funcionario: nome, cpf, salario, cargo,
+                            dataAdmissao
+                          </li>
+                          <li>
+                            • Validações: CPF válido, salário positivo, nome não
+                            vazio
+                          </li>
+                          <li>
+                            • Métodos: calcularTempoEmpresa(), aplicarAumento(),
+                            calcularSalarioAnual()
+                          </li>
+                          <li>
+                            • Classe Empresa que gerencia lista de funcionários
+                          </li>
+                          <li>
+                            • Operações: contratar, demitir, listar por cargo,
+                            calcular folha salarial
+                          </li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="showExerciseDetails('funcionarios')"
+                        class="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        Ver Detalhes e Exemplo →
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="bg-sage-50 rounded-xl p-6 border border-sage-200">
+                    <h4
+                      class="text-lg font-semibold text-sage-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">🏦</span>
+                      Exercício 2: Sistema Bancário Básico (0,5 pts)
+                    </h4>
+                    <div class="space-y-3">
+                      <div
+                        class="bg-white rounded-lg p-4 border border-sage-200"
+                      >
+                        <h5 class="font-semibold text-sage-700 mb-2">
+                          Especificações:
+                        </h5>
+                        <ul class="text-sm text-sage-600 space-y-1">
+                          <li>
+                            • Classe ContaBancaria: numero, titular, saldo, tipo
+                          </li>
+                          <li>
+                            • Operações: depositar, sacar, transferir,
+                            consultarSaldo
+                          </li>
+                          <li>
+                            • Validações: saldo não negativo, valores positivos
+                          </li>
+                          <li>• Classe Banco: gerenciar múltiplas contas</li>
+                          <li>
+                            • Relatórios: contas por tipo, saldo total do banco
+                          </li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="showExerciseDetails('bancario')"
+                        class="w-full bg-green-100 hover:bg-green-200 text-green-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        Ver Detalhes e Exemplo →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="space-y-6">
+                  <div class="bg-sage-50 rounded-xl p-6 border border-sage-200">
+                    <h4
+                      class="text-lg font-semibold text-sage-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">🛒</span>
+                      Exercício 3: Loja Virtual (0,5 pts)
+                    </h4>
+                    <div class="space-y-3">
+                      <div
+                        class="bg-white rounded-lg p-4 border border-sage-200"
+                      >
+                        <h5 class="font-semibold text-sage-700 mb-2">
+                          Especificações:
+                        </h5>
+                        <ul class="text-sm text-sage-600 space-y-1">
+                          <li>
+                            • Classe Produto: codigo, nome, preco, categoria,
+                            estoque
+                          </li>
+                          <li>• Classe Cliente: nome, cpf, email, endereco</li>
+                          <li>
+                            • Classe Pedido: cliente, lista de produtos, data,
+                            total
+                          </li>
+                          <li>
+                            • Operações: cadastrar produtos, realizar pedidos,
+                            controlar estoque
+                          </li>
+                          <li>
+                            • Relatórios: produtos mais vendidos, vendas por
+                            categoria
+                          </li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="showExerciseDetails('loja')"
+                        class="w-full bg-purple-100 hover:bg-purple-200 text-purple-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        Ver Detalhes e Exemplo →
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="bg-sage-50 rounded-xl p-6 border border-sage-200">
+                    <h4
+                      class="text-lg font-semibold text-sage-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">🎓</span>
+                      Exercício 4: Sistema Escolar (0,5 pts)
+                    </h4>
+                    <div class="space-y-3">
+                      <div
+                        class="bg-white rounded-lg p-4 border border-sage-200"
+                      >
+                        <h5 class="font-semibold text-sage-700 mb-2">
+                          Especificações:
+                        </h5>
+                        <ul class="text-sm text-sage-600 space-y-1">
+                          <li>
+                            • Classe Aluno: nome, matricula, curso, semestre
+                          </li>
+                          <li>
+                            • Classe Disciplina: codigo, nome, cargaHoraria,
+                            professor
+                          </li>
+                          <li>
+                            • Classe Nota: aluno, disciplina, valor, bimestre
+                          </li>
+                          <li>
+                            • Operações: matricular alunos, lançar notas,
+                            calcular médias
+                          </li>
+                          <li>
+                            • Relatórios: boletim do aluno, estatísticas da
+                            turma
+                          </li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="showExerciseDetails('escolar')"
+                        class="w-full bg-orange-100 hover:bg-orange-200 text-orange-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        Ver Detalhes e Exemplo →
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="bg-amber-50 border border-amber-200 rounded-xl p-6">
+                <h4
+                  class="text-lg font-semibold text-amber-800 mb-4 flex items-center"
+                >
+                  <span class="text-2xl mr-3">📊</span>
+                  Critérios de Avaliação
+                </h4>
+                <div class="grid md:grid-cols-4 gap-4">
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-amber-700">40%</div>
+                    <div class="text-sm font-semibold text-amber-800">
+                      Funcionalidade
+                    </div>
+                    <div class="text-xs text-amber-600">
+                      Código funcionando corretamente
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-amber-700">30%</div>
+                    <div class="text-sm font-semibold text-amber-800">POO</div>
+                    <div class="text-xs text-amber-600">
+                      Aplicação adequada de conceitos
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-amber-700">20%</div>
+                    <div class="text-sm font-semibold text-amber-800">
+                      Validações
+                    </div>
+                    <div class="text-xs text-amber-600">
+                      Tratamento de entradas inválidas
+                    </div>
+                  </div>
+                  <div class="text-center">
+                    <div class="text-2xl font-bold text-amber-700">10%</div>
+                    <div class="text-sm font-semibold text-amber-800">
+                      Documentação
+                    </div>
+                    <div class="text-xs text-amber-600">
+                      Comentários e clareza do código
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Trabalho 2 -->
+            <div class="glass rounded-2xl p-8 border border-sage-200 mb-8">
+              <div class="flex items-start justify-between mb-6">
+                <div>
+                  <h3 class="text-2xl font-bold text-sage-800 mb-2">
+                    🚀 TRABALHO 2: Projeto Integrador - Fase 1
+                  </h3>
+                  <div class="flex items-center space-x-4 text-sm">
+                    <span
+                      class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full font-semibold"
+                      >2,0 pontos</span
+                    >
+                    <span
+                      class="bg-red-100 text-red-800 px-3 py-1 rounded-full font-semibold"
+                      >📅 Prazo: 20/09/2024</span
+                    >
+                    <span
+                      class="bg-green-100 text-green-800 px-3 py-1 rounded-full font-semibold"
+                      >📄 Código + Documentação + Apresentação</span
+                    >
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid lg:grid-cols-2 gap-8 mb-6">
+                <div class="space-y-6">
+                  <div
+                    class="bg-emerald-50 rounded-xl p-6 border border-emerald-200"
+                  >
+                    <h4
+                      class="text-lg font-semibold text-emerald-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">📚</span>
+                      Sistema de Biblioteca
+                    </h4>
+                    <div class="space-y-4">
+                      <div>
+                        <h5 class="font-semibold text-emerald-700 mb-2">
+                          Funcionalidades Mínimas:
+                        </h5>
+                        <ul class="text-sm text-emerald-600 space-y-1">
+                          <li>• Cadastro de livros com validações completas</li>
+                          <li>• Cadastro de usuários (diferentes tipos)</li>
+                          <li>• Sistema de empréstimos e devoluções</li>
+                          <li>• Consultas por diferentes critérios</li>
+                          <li>• Relatórios básicos</li>
+                        </ul>
+                      </div>
+                      <button
+                        onclick="showProjectDetails('biblioteca')"
+                        class="w-full bg-emerald-100 hover:bg-emerald-200 text-emerald-800 px-4 py-3 rounded-lg font-medium transition-all duration-300"
+                      >
+                        Ver Especificações Completas →
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="bg-blue-50 rounded-xl p-6 border border-blue-200">
+                    <h4
+                      class="text-lg font-semibold text-blue-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">⚙️</span>
+                      Requisitos Técnicos
+                    </h4>
+                    <ul class="text-sm text-blue-600 space-y-2">
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"
+                        ></div>
+                        <span
+                          >Aplicação de todos os conceitos do 3º bimestre</span
+                        >
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"
+                        ></div>
+                        <span>Interface de console bem estruturada</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"
+                        ></div>
+                        <span>Validações robustas</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"
+                        ></div>
+                        <span>Código bem documentado</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2"
+                        ></div>
+                        <span>Casos de teste</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="space-y-6">
+                  <div
+                    class="bg-purple-50 rounded-xl p-6 border border-purple-200"
+                  >
+                    <h4
+                      class="text-lg font-semibold text-purple-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">📋</span>
+                      Critérios de Avaliação
+                    </h4>
+                    <div class="space-y-4">
+                      <div
+                        class="flex justify-between items-center p-3 bg-white rounded-lg border border-purple-200"
+                      >
+                        <div>
+                          <div class="font-semibold text-purple-800">
+                            Funcionalidade
+                          </div>
+                          <div class="text-xs text-purple-600">
+                            Sistema funcionando completamente
+                          </div>
+                        </div>
+                        <div class="text-xl font-bold text-purple-700">0,7</div>
+                      </div>
+                      <div
+                        class="flex justify-between items-center p-3 bg-white rounded-lg border border-purple-200"
+                      >
+                        <div>
+                          <div class="font-semibold text-purple-800">
+                            Aplicação de POO
+                          </div>
+                          <div class="text-xs text-purple-600">
+                            Conceitos bem aplicados
+                          </div>
+                        </div>
+                        <div class="text-xl font-bold text-purple-700">0,5</div>
+                      </div>
+                      <div
+                        class="flex justify-between items-center p-3 bg-white rounded-lg border border-purple-200"
+                      >
+                        <div>
+                          <div class="font-semibold text-purple-800">
+                            Qualidade do Código
+                          </div>
+                          <div class="text-xs text-purple-600">
+                            Organização e documentação
+                          </div>
+                        </div>
+                        <div class="text-xl font-bold text-purple-700">0,4</div>
+                      </div>
+                      <div
+                        class="flex justify-between items-center p-3 bg-white rounded-lg border border-purple-200"
+                      >
+                        <div>
+                          <div class="font-semibold text-purple-800">
+                            Apresentação
+                          </div>
+                          <div class="text-xs text-purple-600">
+                            Demonstração e defesa
+                          </div>
+                        </div>
+                        <div class="text-xl font-bold text-purple-700">0,4</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-red-50 rounded-xl p-6 border border-red-200">
+                    <h4
+                      class="text-lg font-semibold text-red-800 mb-4 flex items-center"
+                    >
+                      <span class="text-2xl mr-3">⚠️</span>
+                      Dicas Importantes
+                    </h4>
+                    <ul class="text-sm text-red-700 space-y-2">
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mt-2"
+                        ></div>
+                        <span
+                          >Comece cedo! Projetos complexos precisam de
+                          tempo</span
+                        >
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mt-2"
+                        ></div>
+                        <span>Teste cada funcionalidade antes de avançar</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mt-2"
+                        ></div>
+                        <span>Documente o código conforme desenvolve</span>
+                      </li>
+                      <li class="flex items-start space-x-2">
+                        <div
+                          class="w-1.5 h-1.5 bg-red-500 rounded-full mt-2"
+                        ></div>
+                        <span>Prepare-se bem para a apresentação</span>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Detalhes dos Exercícios -->
+            <div id="exerciseDetails" class="hidden space-y-8 mb-8">
+              <div
+                id="exerciseContent"
+                class="glass rounded-2xl p-8 border border-sage-200"
+              >
+                <!-- Conteúdo será inserido dinamicamente -->
+              </div>
+            </div>
+
+            <!-- Detalhes do Projeto -->
+            <div id="projectDetails" class="hidden space-y-8 mb-8">
+              <div
+                id="projectContent"
+                class="glass rounded-2xl p-8 border border-sage-200"
+              >
+                <!-- Conteúdo será inserido dinamicamente -->
+              </div>
+            </div>
+
+            <div class="text-center">
+              <button
+                onclick="changeSlide(1)"
+                class="bg-sage-600 hover:bg-sage-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+              >
+                Finalizar com Quiz →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Slide 6: Quiz -->
+        <div class="slide w-1/6 h-full flex items-center justify-center p-8">
+          <div class="max-w-4xl mx-auto animate-fade-in">
+            <div class="mb-8 text-center">
+              <h2 class="text-3xl font-bold text-sage-800 mb-4">
+                Quiz Interativo
+              </h2>
+              <p class="text-lg text-sage-600">
+                Teste seus conhecimentos sobre construtores e encapsulamento
+              </p>
+            </div>
+          </div>
+          <div
+            id="quizContainer"
+            class="glass rounded-2xl p-8 border border-sage-200"
+          >
+            <div class="mb-6">
+              <div class="flex justify-between items-center mb-4">
+                <span class="text-sm text-sage-600"
+                  >Questão <span id="currentQuestion">1</span> de
+                  <span id="totalQuestions">5</span></span
+                >
+                <div class="w-32 h-2 bg-sage-200 rounded-full overflow-hidden">
+                  <div
+                    id="quizProgress"
+                    class="h-full bg-sage-600 transition-all duration-300"
+                    style="width: 20%"
+                  ></div>
+                </div>
+              </div>
+              <h3
+                id="questionText"
+                class="text-xl font-semibold text-sage-800 mb-6"
+              >
+                Qual é a principal função de um construtor?
+              </h3>
+            </div>
+
+            <div id="answersContainer" class="space-y-3 mb-6">
+              <button
+                onclick="selectAnswer(0)"
+                class="answer-btn w-full text-left p-4 rounded-lg border border-sage-200 hover:bg-sage-50 transition-all duration-300"
+              >
+                A) Destruir objetos da memória
+              </button>
+              <button
+                onclick="selectAnswer(1)"
+                class="answer-btn w-full text-left p-4 rounded-lg border border-sage-200 hover:bg-sage-50 transition-all duration-300"
+              >
+                B) Inicializar os atributos de um objeto
+              </button>
+              <button
+                onclick="selectAnswer(2)"
+                class="answer-btn w-full text-left p-4 rounded-lg border border-sage-200 hover:bg-sage-50 transition-all duration-300"
+              >
+                C) Criar métodos estáticos
+              </button>
+              <button
+                onclick="selectAnswer(3)"
+                class="answer-btn w-full text-left p-4 rounded-lg border border-sage-200 hover:bg-sage-50 transition-all duration-300"
+              >
+                D) Definir herança entre classes
+              </button>
+            </div>
+
+            <div class="flex justify-between">
+              <button
+                id="prevQuizBtn"
+                onclick="previousQuestion()"
+                class="px-6 py-3 bg-sage-200 text-sage-700 rounded-lg font-medium transition-all duration-300 hover:bg-sage-300 disabled:opacity-50"
+                disabled
+              >
+                ← Anterior
+              </button>
+              <button
+                id="nextQuizBtn"
+                onclick="nextQuestion()"
+                class="px-6 py-3 bg-sage-600 text-white rounded-lg font-medium transition-all duration-300 hover:bg-sage-700 disabled:opacity-50"
+                disabled
+              >
+                Próxima →
+              </button>
+            </div>
+          </div>
+
+          <div
+            id="quizResults"
+            class="hidden glass rounded-2xl p-8 border border-sage-200 text-center"
+          >
+            <div class="text-6xl mb-4">🎉</div>
+            <h3 class="text-2xl font-bold text-sage-800 mb-4">
+              Quiz Concluído!
+            </h3>
+            <div class="text-4xl font-bold text-sage-600 mb-4">
+              <span id="finalScore">0</span>/5
+            </div>
+            <p id="scoreMessage" class="text-lg text-sage-600 mb-6">
+              Excelente trabalho!
+            </p>
+            <button
+              onclick="restartQuiz()"
+              class="bg-sage-600 hover:bg-sage-700 text-white px-8 py-4 rounded-xl font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
+            >
+              Refazer Quiz
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="main.js"></script>
+  </body>
+</html>

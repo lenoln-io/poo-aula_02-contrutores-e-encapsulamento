@@ -913,19 +913,19 @@
                     </div>
                   </div>
                 </div>
-
-                <div
-                  class="bg-sage-900 rounded-2xl p-6 text-sage-100 code-block text-sm overflow-x-auto max-h-96 overflow-y-auto"
-                >
-                  <div class="flex items-center justify-between mb-4">
-                    <span
-                      class="bg-sage-700 px-3 py-1 rounded-full text-xs font-medium"
-                      >ContaBancaria.java</span
-                    >
-                  </div>
-                  <pre
-                    class="leading-relaxed"
-                  ><span class="text-blue-400">public class</span> <span class="text-yellow-400">ContaBancaria</span> {
+                <div class="space-y-6">
+                  <div
+                    class="bg-sage-900 rounded-2xl p-6 text-sage-100 code-block text-sm overflow-x-auto max-h-[33rem] overflow-y-auto"
+                  >
+                    <div class="flex items-center justify-between mb-4">
+                      <span
+                        class="bg-sage-700 px-3 py-1 rounded-full text-xs font-medium"
+                        >ContaBancaria.java</span
+                      >
+                    </div>
+                    <pre
+                      class="leading-relaxed"
+                    ><span class="text-blue-400">public class</span> <span class="text-yellow-400">ContaBancaria</span> {
     <span class="text-blue-400">private</span> <span class="text-green-400">String</span> numero;
     <span class="text-blue-400">private</span> <span class="text-green-400">String</span> titular;
     <span class="text-blue-400">private</span> <span class="text-green-400">double</span> saldo;
@@ -998,6 +998,8 @@
         <span class="text-blue-400">return</span> <span class="text-blue-400">true</span>;
     }
 }</pre>
+                  </div>
+                  <div id="bankStatement"></div>
                 </div>
               </div>
             </div>
@@ -1972,7 +1974,10 @@
               </h3>
             </div>
 
-            <div id="answersContainer" class="space-y-3 mb-6">
+            <div
+              id="answersContainer"
+              class="space-y-3 mbshowBankAccountActivity()-6"
+            >
               <button
                 onclick="selectAnswer(0)"
                 class="answer-btn w-full text-left p-4 rounded-lg border border-sage-200 hover:bg-sage-50 transition-all duration-300"

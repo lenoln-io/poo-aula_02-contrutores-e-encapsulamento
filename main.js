@@ -135,9 +135,6 @@ document.addEventListener("keydown", (event) => {
 	} else if (event.key === "ArrowLeft") {
 		event.preventDefault();
 		changeSlide(-1);
-	} else if (event.key >= "1" && event.key <= totalSlides) {
-		event.preventDefault();
-		goToSlide(parseInt(event.key) - 1);
 	}
 });
 
@@ -573,7 +570,7 @@ function performOperation(operation) {
 			}
 			if (valor > currentBankAccount.saldo) {
 				alert(
-					`Saldo insuficiente! Saldo atual: R$ ${currentBankAccount.saldo.toFixed(2).replace(".", ",")}`,
+					`Saldo insuficiente! Saldo atual: R$ ${currecreditntBankAccount.saldo.toFixed(2).replace(".", ",")}`,
 				);
 				return;
 			}
@@ -608,27 +605,106 @@ function performOperation(operation) {
 }
 
 function showStatement() {
+	const statementOutput = document.getElementById("bankStatement");
 	const account = currentBankAccount;
-	let statement = `=== EXTRATO BANCÁRIO ===\n`;
-	statement += `Conta: ${account.numero}\n`;
-	statement += `Titular: ${account.titular}\n`;
-	statement += `Tipo: ${account.tipoConta}\n`;
-	statement += `Status: ${account.ativa ? "Ativa" : "Inativa"}\n\n`;
-	statement += `=== TRANSAÇÕES ===\n`;
+
+	let statementHTML = `
+		<div class="glass rounded-2xl p-8 border border-sage-200 shadow-lg max-w-4xl mx-auto">
+			<div class="text-center mb-6">
+				<h3 class="text-2xl font-bold text-sage-800 mb-2">
+					🧾 Extrato Bancário
+				</h3>
+				<div class="w-20 h-1 bg-sage-400 mx-auto rounded-full"></div>
+			</div>
+
+			<div class="account-info bg-sage-50 rounded-xl p-6 mb-6 border border-sage-100">
+				<h4 class="text-lg font-semibold text-sage-700 mb-4 flex items-center">
+					<span class="mr-2">🏦</span> Informações da Conta
+				</h4>
+				<div class="grid grid-cols-2 gap-4">
+					<div class="flex flex-col">
+						<span class="text-sm text-sage-600 font-medium">Número da Conta</span>
+						<span class="text-sage-800 font-semibold">${account.numero}</span>
+					</div>
+					<div class="flex flex-col">
+						<span class="text-sm text-sage-600 font-medium">Titular</span>
+						<span class="text-sage-800 font-semibold">${account.titular}</span>
+					</div>
+					<div class="flex flex-col">
+						<span class="text-sm text-sage-600 font-medium">Tipo de Conta</span>
+						<span class="text-sage-800 font-semibold">${account.tipoConta}</span>
+					</div>
+					<div class="flex flex-col">
+						<span class="text-sm text-sage-600 font-medium">Status</span>
+						<span class="font-semibold ${account.ativa ? "text-green-600" : "text-red-600"}">
+							${account.ativa ? "✅ Ativa" : "❌ Inativa"}
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<div class="mb-6">
+				<h4 class="text-lg font-semibold text-sage-700 mb-4 flex items-center">
+					<span class="mr-2">💰</span> Histórico de Transações
+				</h4>
+				<div class="transactions bg-white rounded-xl border border-sage-200 overflow-hidden">
+	`;
 
 	if (account.historico.length === 0) {
-		statement += `Nenhuma transação realizada.\n`;
+		statementHTML += `
+			<div class="p-8 text-center text-sage-500">
+				<div class="text-4xl mb-3">📭</div>
+				<p class="text-lg">Nenhuma transação realizada</p>
+				<p class="text-sm mt-1">Suas transações aparecerão aqui</p>
+			</div>
+		`;
 	} else {
 		account.historico.forEach((transacao, index) => {
+			const isDeposit =
+				transacao.tipo === "Depósito Inicial" || transacao.tipo === "Depósito";
 			const sinal = transacao.valor >= 0 ? "+" : "";
-			statement += `${index + 1}. ${transacao.tipo} - ${sinal}R$ ${Math.abs(transacao.valor).toFixed(2).replace(".", ",")} (${transacao.data})\n`;
+			const valorClass = isDeposit ? "text-green-600" : "text-red-600";
+			const bgClass = index % 2 === 0 ? "bg-sage-25" : "bg-white";
+
+			statementHTML += `
+				<div class="transaction-item ${bgClass} p-4 border-b border-sage-100 last:border-b-0 hover:bg-sage-50 transition-colors">
+					<div class="flex items-center justify-between">
+						<div class="flex items-center space-x-3">
+							<div class="text-2xl">
+								${isDeposit ? "↗️" : "↘️"}
+							</div>
+							<div>
+								<div class="font-semibold text-sage-800">${transacao.tipo}</div>
+								<div class="text-sm text-sage-600">${transacao.data}</div>
+							</div>
+						</div>
+						<div class="text-right">
+							<div class="font-bold text-lg ${valorClass}">
+								${sinal}R$ ${Math.abs(transacao.valor).toFixed(2).replace(".", ",")}
+							</div>
+						</div>
+					</div>
+				</div>
+			`;
 		});
 	}
 
-	statement += `\n=== SALDO ATUAL ===\n`;
-	statement += `R$ ${account.saldo.toFixed(2).replace(".", ",")}\n`;
+	statementHTML += `
+				</div>
+			</div>
 
-	alert(statement);
+			<div class="current-balance bg-gradient-to-r from-sage-100 to-sage-200 rounded-xl p-6 text-center border border-sage-300">
+				<h4 class="text-lg font-semibold text-sage-700 mb-3 flex items-center justify-center">
+					<span class="mr-2">💲</span> Saldo Atual
+				</h4>
+				<div class="text-3xl font-bold text-sage-800">
+					R$ ${account.saldo.toFixed(2).replace(".", ",")}
+				</div>
+			</div>
+		</div>
+	`;
+
+	statementOutput.innerHTML = statementHTML;
 }
 
 function generateAccountNumber() {
